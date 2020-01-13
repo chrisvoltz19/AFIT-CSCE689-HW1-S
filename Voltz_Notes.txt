@@ -1,0 +1,55 @@
+Voltz CSCE693 Homework 1 Notes
+
+- Server is single-process (not using threads...) (want it to do as little work as possible)
+        - server should send info to client and then wait for another connection/request 
+                - method to establish connection
+                - method to handle commands 
+                
+        - the server should have the information to display to the user 
+                - user session (randomly generated)
+                - server time (?)
+                - 
+                
+        - interrupts 
+                - include a timeout for request...(send again?)
+                
+- Files that don't get edited 
+        - server_main.cpp
+        - client_main.cpp 
+        - Server.cpp 
+        - Client.cpp 
+        - associated header files
+
+
+
+Can you add storage -or- ram to a laptop
+
+
+
+CODE THOUGHTS:
+
+// Method to interpret user commands and perform an action on the client side (?)
+// Returns Command Number to the server for processing. 
+// If 10 invalid commands are executed without a valid command, disconnects the user. 
+int decision(int connctionNum)
+{
+        //std::string usrCommand = null;
+        int success = 0;
+        int commandNumber = 0;
+        // get the user choice 
+        std::cout << "Hello, Please enter your choice"
+        
+        
+        
+        
+        
+        std::cout << "MENU:" << std::endl << "1: ???" << std::endl << "2: ???" << std::endl << "3: ???" << std::endl << "4: ???" << std::endl << "5: ???" << std::endl << "passwd: Change your password" << std::endl << "exit: Disconnect from server" << std::endl << "menu: Displays this menu" << std::endl;
+        
+        else
+        {
+                std::cout << "Invalid command" << std::endl;
+        }
+
+
+
+}
