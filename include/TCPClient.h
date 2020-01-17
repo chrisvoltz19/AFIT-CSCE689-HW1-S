@@ -34,6 +34,7 @@ public:
 
 private:
 	int clientSocket;
+	int failedConnect;
 
 };
 
