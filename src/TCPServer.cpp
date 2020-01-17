@@ -138,6 +138,7 @@ void TCPServer::listenSvr()
 			// Not the listening server socket so must be a different connection
 			else
 			{
+				memset(buffer, '\0', 150);
 				result = recv(this->fds[i].fd, buffer, sizeof(buffer) - 1, 0); 
 				if(result < 0)
 				{
@@ -155,10 +156,12 @@ void TCPServer::listenSvr()
 				}
 				// received data to use 
 				// parse data 
-				buffer[-1] = '\0';
-				while(sizeof(buffer > 145))
+				
+				while(buffer[148] != '\0')
 				{
+					memset(buffer, '\0', 150);
 					result = recv(this->fds[i].fd, buffer, sizeof(buffer) - 1, 0); 
+					
 				}
 				shutdown = parseData(buffer, result, i); 
 			}
