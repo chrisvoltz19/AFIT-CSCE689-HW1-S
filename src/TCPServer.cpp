@@ -72,20 +72,6 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port)
 
 void TCPServer::listenSvr() 
 {
-	// loop until exit condition is reached. TODO: What is the exit condition??
-	/*while(true)
-	{
-		sockaddr_in client;
-		int clientSocket = accept4(this->lSocket, (sockaddr*)&client, sizeof(client), O_NONBLOCK));
-		
-		//accept an incoming connection, if there is no error (need to check for other errors?)
-		if(clientSocket != -1)
-		{
-			// add to the list of file descriptors 
-			this->clients.emplace_back(clientSocket);
-		}
-	}*/
-
 	int result; // will be used to differentiate between different polling and receiving errors
 	int newConnection = 0; // used for checking if a new connection is attempting to connect
 	int shutdown = 0; // variable to track if the server had an error within one of the loops
@@ -126,7 +112,7 @@ void TCPServer::listenSvr()
 				shutdown = 1;
 				break;
 			}
-			std::cout << "Checking if at lSocket" << std::endl;
+
 			if(this->fds[i].fd == this->lSocket) // Case that we are at the listening (server) socket
 			{
 				// accept all new incoming connections that are waiting
@@ -152,28 +138,29 @@ void TCPServer::listenSvr()
 			// Not the listening server socket so must be a different connection
 			else
 			{
-				// the current server still has information it is sending
-				while(true)
+				result = recv(this->fds[i].fd, buffer, sizeof(buffer) - 1, 0); 
+				if(result < 0)
 				{
-					result = recv(this->fds[i].fd, buffer, sizeof(buffer), 0); 
-					if(result < 0)
+					if(errno != EWOULDBLOCK && errno != EAGAIN) // these two mean valid connection but no new data
 					{
-						if(errno != EWOULDBLOCK && errno != EAGAIN) // these two mean valid connection but no new data
-						{
-							perror("Error on receive"); 
-							closeConnection(i); 
-						}
-						break;
-					}
-					if(result == 0) // client closed connection
-					{
+						perror("Error on receive"); 
 						closeConnection(i); 
-						break;
 					}
-					// received data to use 
-					// parse data 
-					shutdown = parseData(buffer, result, i); 
+					break;
 				}
+				if(result == 0) // client closed connection
+				{
+					closeConnection(i); 
+					break;
+				}
+				// received data to use 
+				// parse data 
+				buffer[-1] = '\0';
+				while(sizeof(buffer > 145))
+				{
+					result = recv(this->fds[i].fd, buffer, sizeof(buffer) - 1, 0); 
+				}
+				shutdown = parseData(buffer, result, i); 
 			}
 		}	
 	}
