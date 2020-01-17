@@ -8,12 +8,14 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include <string.h>11
+#include <string.h>
+#include <string>
 #include <poll.h>
 #include <stdlib.h>
 #include <iostream>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sstream>
 
 class TCPServer : public Server 
 {
@@ -25,7 +27,9 @@ public:
    void listenSvr();
    void shutdown();
    void closeConnection(int connection);
-   void parseData(char* buffer, int length);
+   int parseData(char* buffer, int length, int fd);
+   int decision(std::string input, int fd);
+   void options(std::string s);
 
 private:
    int lSocket; // File Descriptor of the listening server socket

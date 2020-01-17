@@ -89,8 +89,6 @@ void TCPServer::listenSvr()
 	int shutdown = 0; // variable to track if the server had an error within one of the loops
 	char buffer[150]; // will be used to hold from receive
 	sockaddr_in client;
-	std::string subString;
-	std::string commands; // string to hold the input from clients
 	// while loop to handle everything 
 	while(shutdown == 0)
 	{
@@ -130,8 +128,8 @@ void TCPServer::listenSvr()
 				// accept all new incoming connections that are waiting
 				while(newConnection != -1) 
 				{
-					newConnection = accept(this->lSocket, (sockaddr*)&client, sizeof(client));
-					if(new_connection < 0) // error on exception
+					newConnection = accept(this->lSocket, (sockaddr*)&client, (socklen_t*)sizeof(client));
+					if(newConnection < 0) // error on exception
 					{
 						if(errno != EWOULDBLOCK && errno != EAGAIN) // these two errors just mean no connections
 						{
@@ -143,7 +141,7 @@ void TCPServer::listenSvr()
 					// new connection has been accepted
 					this->fds[nfds].fd = newConnection;
 					this->fds[nfds].events = POLLIN; //TODO: if errors sending back check here
-					nfds++
+					nfds++;
 				}
 			}
 			// Not the listening server socket so must be a different connection
@@ -152,15 +150,15 @@ void TCPServer::listenSvr()
 				// the current server still has information it is sending
 				while(true)
 				{
-					result = recv(this->fds[i].fd, buffer, sizeof(buffer)); 
+					result = recv(this->fds[i].fd, buffer, sizeof(buffer), 0); 
 					if(result < 0)
 					{
 						if(errno != EWOULDBLOCK && errno != EAGAIN) // these two mean valid connection but no new data
 						{
 							perror("Error on receive"); 
 							closeConnection(i); 
-							break;
 						}
+						break;
 					}
 					if(result == 0) // client closed connection
 					{
@@ -169,14 +167,10 @@ void TCPServer::listenSvr()
 					}
 					// received data to use 
 					// parse data 
-					parseData(buffer, result); 
-											
-
-		
-		// while loop to handle commands sent/requested by client
-
-
-
+					shutdown = parseData(buffer, result, i); 
+				}
+			}
+		}	
 	}
 	
 		
@@ -228,22 +222,118 @@ void TCPServer::closeConnection(int connection)
 /***********************************************************************************************
  * ParseData - takes in buffer data and runs commands and then returns when text has been used
  *
- * I referenced https://stackoverflow.com/questions/13172158/c-split-string-by-line
+ * I referenced https://stackoverflow.com/questions/13172158/c-split-string-by-line 
+ * 
+ * Returns 1 on error in sending
  *
  * *********************************************************************************************/
-void TCPServer::parseData(char* buffer, int length)
+int TCPServer::parseData(char* buffer, int length, int fd)
 {
-	std::string input; 
-	std::stringstream inputStream(buffer);
+	std::string input = buffer; 
+	std::stringstream inputStream;
+
+	inputStream << input;
 
 	if(buffer != NULL)
 	{
-		while(std::getline(ss, input))
+		while(std::getline(inputStream, input))
 		{
 			//perform functionality based on command
-			decision(input);
+			if(decision(input, fd) == 1) // there was an error
+			{
+				return 1;
+			}
 		}
+	}
+	return 0;
+}
+/************************************************************************************************
+ * decision - takes a string and file descriptor, does the appropriate command and sends it back
+ *
+ *    Throws: socket_error for recoverable errors, runtime_error for unrecoverable types
+ * 
+ * Returns 1 on error on sending
+ *
+ ************************************************************************************************/
+
+int TCPServer::decision(std::string input, int fd)
+{      
+	std::string result;
+
+	if(input.compare("hello") == 0)
+	{
+		result.assign("Hello new user. I hope you have a great day!");
+	}
+	else if(input.compare("1") == 0)
+        {
+                result.assign("You should watch The Counte of Monte Cristo or Gladiator");
+        }
+        else if(input.compare("2") == 0)
+        {
+                result.assign("You should read Call Sign Chaos: Learning to Lead");
+        }
+        else if(input.compare("3") == 0)
+        {
+                result.assign("If you like fps games, try the Halo series");
+        }
+        else if(input.compare("4") == 0)
+        {
+                result.assign("Squirrels usually forget where they hide about half of their nuts \n");
+        }
+        else if(input.compare("5") == 0)
+        {
+                result.assign("Sea Otters hold hands when they sleep so they don't drift apart");
+        }
+        else if(input.compare("passwd") == 0)
+        {
+		result.assign("To be implemented at a later date");
+        }
+        else if(input.compare("menu" ) == 0)
+        {
+		result.assign("MENU: \n");
+                options(result);
+
+        }
+        else
+        {
+                result.assign("Invalid command. Please use command \"menu\" for assistance.\n");
+        }
+	
+	// string to buffer conversion (referenced geeksforgeeks.org/onvert-string-char-array-cpp)
+	int len = result.length();
+	char buffer[len+1];
+	strcpy(buffer, result.c_str());
+	
+
+	// send the command back to the client
+	if(send(fds[fd].fd, buffer, len, 0) < 0)
+	{	
+		perror("Failed to send information back");
+		return 1;
+	}
+	else 
+	{
+		return 0;
 	}
 }
 
+
+/************************************************************************************************
+ *  options - This is a method that prints out the current options for users 
+ *  It is put in a method for cleaner programming practices so one change affects all instances 
+ *
+ ************************************************************************************************/
+void TCPServer::options(std::string s)
+{
+        s.append("1: Movie Recommendation \n" 
+                 "2: Book Recommendation \n" 
+                 "3: Game Recommendation \n" 
+                 "4: Fun fact \n"
+                 "5: Cute fun fact \n"
+                 "passwd: Change your password\n"
+                 "exit: Disconnect from server\n" 
+                 "menu: Displays this menu\n");
+
+
+}
 
