@@ -116,7 +116,7 @@ void TCPServer::listenSvr()
 			// Loop through and see if any file descriptors 
 			if(this->fds[i].revents == 0) // nothing happened in this case
 			{
-				std::cout << this->fds[i].fd << " had no action this iteration" << std::endl;
+				//std::cout << this->fds[i].fd << " had no action this iteration" << std::endl;
 				continue;
 			}		
 			// Deal with bad case of revents not being POLLIN
@@ -126,6 +126,7 @@ void TCPServer::listenSvr()
 				shutdown = 1;
 				break;
 			}
+			std::cout << "Checking if at lSocket" << std::endl;
 			if(this->fds[i].fd == this->lSocket) // Case that we are at the listening (server) socket
 			{
 				// accept all new incoming connections that are waiting
@@ -143,9 +144,9 @@ void TCPServer::listenSvr()
 					}
 					// new connection has been accepted
 					this->fds[nfds].fd = newConnection;
-					this->fds[nfds].events = POLLIN; //TODO: if errors sending back check here
+					this->fds[nfds].events = POLLIN; 
 					nfds++;
-					std::cout << "Received new connection" << std::endl;
+					std::cout << "Received new connection. NFDS: " <<  nfds << " File Descriptor: " << this->nfds <<std::endl;
 				//}
 			}
 			// Not the listening server socket so must be a different connection
