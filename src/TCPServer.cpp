@@ -130,7 +130,6 @@ void TCPServer::listenSvr()
 				// accept all new incoming connections that are waiting
 				while(newConnection != -1) 
 				{
-					std::cout << &client;
 					newConnection = accept(this->lSocket, (sockaddr*)&client, (socklen_t*)sizeof(client));
 					if(newConnection < 0) // error on exception
 					{
@@ -145,6 +144,7 @@ void TCPServer::listenSvr()
 					this->fds[nfds].fd = newConnection;
 					this->fds[nfds].events = POLLIN; //TODO: if errors sending back check here
 					nfds++;
+					std::cout << "Received new connection" << std::endl;
 				}
 			}
 			// Not the listening server socket so must be a different connection
