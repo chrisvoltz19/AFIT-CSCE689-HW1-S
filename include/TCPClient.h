@@ -3,6 +3,19 @@
 
 #include <string>
 #include "Client.h"
+// added necessary header files
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <poll.h>
+#include <stdlib.h>
+#include <iostream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sstream>
 
 // The amount to read in before we send a packet
 const unsigned int stdin_bufsize = 50;
@@ -20,6 +33,7 @@ public:
    virtual void closeConn();
 
 private:
+	int clientSocket;
 
 };
 

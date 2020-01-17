@@ -4,7 +4,7 @@ TCPServer::TCPServer()
 {
 	// initalize the memory for the pollfd struct
 	memset(this->fds, 0, sizeof(this->fds));
-	this->timeout = 1000 * 19;// 2 * 60 * 1000; // set timeout value to 2 minutes 
+	this->timeout = 2 * 60 * 1000; // set timeout value to 2 minutes 
 }
 
 
@@ -26,14 +26,14 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port)
 	// check if socket creation failed, shutdown server if it did 
 	if(this->lSocket == -1)
 	{
-		std::cerr << "Failed to create server socket" << std::endl;
+		perror("Failed to create server socket");
 		shutdown();
 	}
 	
 	// Set the Socket as nonblocking 
 	if(fcntl(this->lSocket, F_SETFD, O_NONBLOCK) == -1)
 	{
-		std::cerr << "Failed to set up nonblocking" << std::endl;
+		perror("Failed to set up nonblocking");
 	}
 
 	// Bind the socket to an IP and port
@@ -43,14 +43,14 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port)
 	inet_pton(AF_INET, ip_addr, &hint.sin_addr); 
 	if(bind(this->lSocket, (sockaddr*)&hint, sizeof(hint)) == -1)
 	{
-		std::cerr << "Failed to bind to server socket" << std::endl;
+		perror("Failed to bind to server socket");
 		shutdown();
 	}
 
 	// Mark the socket as listening 
 	if(listen(this->lSocket, 20) == -1) // limits the socket to 20 connections
 	{
-		std::cerr << "Unable to currently listen, please try again later" << std::endl;
+		perror("Unable to currently listen, please try again later");
 		shutdown();
 	}
 	
@@ -105,7 +105,7 @@ void TCPServer::listenSvr()
 		}
 		else if(result == 0) // timeout limit reached
 		{
-			std::cout << "Timeout reached... Disconecting server" << std::endl;
+			perror("Timeout reached... Disconecting server");
 			break;
 		}
 
@@ -121,7 +121,7 @@ void TCPServer::listenSvr()
 			// Deal with bad case of revents not being POLLIN
 			if(this->fds[i].revents != POLLIN)
 			{
-				std::cout << "Error: revents is not POLLIN" << std::endl;
+				perror("Error: revents is not POLLIN");
 				shutdown = 1;
 				break;
 			}
@@ -130,6 +130,7 @@ void TCPServer::listenSvr()
 				// accept all new incoming connections that are waiting
 				while(newConnection != -1) 
 				{
+					std::cout << &client;
 					newConnection = accept(this->lSocket, (sockaddr*)&client, (socklen_t*)sizeof(client));
 					if(newConnection < 0) // error on exception
 					{
@@ -187,7 +188,7 @@ void TCPServer::listenSvr()
 
 void TCPServer::shutdown() 
 {
-	// close all the fds here or in the deconstructor
+	// close all the fds here 
 		for(int i=0; i < this->nfds; i++)
 	{
 		if(this->fds[i].fd >= 0)
