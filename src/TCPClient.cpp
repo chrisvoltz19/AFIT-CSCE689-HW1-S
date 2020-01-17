@@ -24,6 +24,8 @@ TCPClient::~TCPClient() {
  * connectTo - Opens a File Descriptor socket to the IP address and port given in the
  *             parameters using a TCP connection.
  *
+ * I referenced https://www.youtube.com/watch?v=fmn-pRvNaho to make sure I was implementing correctly.
+ *
  *    Throws: socket_error exception if failed. socket_error is a child class of runtime_error
  **********************************************************************************************/
 
