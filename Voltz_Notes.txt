@@ -21,11 +21,6 @@ Voltz CSCE693 Homework 1 Notes
         - associated header files
 
 
-
-Can you add storage -or- ram to a laptop
-
-
-
 CODE THOUGHTS:
 
 // Method to interpret user commands and perform an action on the client side (?)
@@ -33,23 +28,85 @@ CODE THOUGHTS:
 // If 10 invalid commands are executed without a valid command, disconnects the user. 
 int decision(int connctionNum)
 {
-        //std::string usrCommand = null;
+        std::string usrCommand;
         int success = 0;
         int commandNumber = 0;
         // get the user choice 
-        std::cout << "Hello, Please enter your choice"
+        std::cout << "Hello, Please enter your command or type menu for options:" << std::endl; 
+        options();
+        getline(std::cin, usrCommand);
         
-        
-        
-        
-        
-        std::cout << "MENU:" << std::endl << "1: ???" << std::endl << "2: ???" << std::endl << "3: ???" << std::endl << "4: ???" << std::endl << "5: ???" << std::endl << "passwd: Change your password" << std::endl << "exit: Disconnect from server" << std::endl << "menu: Displays this menu" << std::endl;
-        
+        if(strcmp(usrCommand, "1"))
+        {
+                return 1;
+        }
+        else if(strcmp(usrCommand, "2"))
+        {
+                return 2;
+        }
+        else if(strcmp(usrCommand, "3"))
+        {
+                return 3;
+        }
+        else if(strcmp(usrCommand, "4"))
+        {
+                return 4;
+        }
+        else if(strcmp(usrCommand, "5"))
+        {
+                return 5;
+        }
+        else if(strcmp(usrCommand, "passwd"))
+        {
+                std::string currPassword;
+                std::string password1;
+                std::string password2;
+                // fully implemented later
+                std::cout << "Please enter your current password: " << std::endl;
+                getline(std::cin, currPassword);
+                // if correct 
+                //{
+                std::cout << "Please enter new password: " << std::endl;
+                getline(std::cin, password1);
+                std::cout << std::endl << "Please enter the same new password again: " << std::endl; 
+                getline(std::cin, password2);
+                if(strcmp(password1, password2) == 0)
+                {
+                        // TODO:Actually implement changing password
+                        std::cout << "Password changed (in HW2)" << std::endl;
+                }
+                else //new passwords did not match
+                {
+                        std::cout << "Password change failed, please try again" << std::endl;
+                }
+                //}
+                
+        }
+        else if(strcmp(usrCommand, "2"))
+        {
+                std::cout << "MENU:" << std::endl;
+                options();
+
+        }
         else
         {
-                std::cout << "Invalid command" << std::endl;
+                std::cout << "Invalid command. Please use command "menu" for assistance." << std::endl;
         }
 
+}
+
+// This is a method that prints out the current options for users 
+// It is put in a method for cleaner programming practices so one change affects all instances 
+void options()
+{
+        std::cout << "1: ???" << std::endl 
+                  << "2: ???" << std::endl 
+                  << "3: ???" << std::endl 
+                  << "4: ???" << std::endl 
+                  << "5: ???" << std::endl 
+                  << "passwd: Change your password" << std::endl 
+                  << "exit: Disconnect from server" << std::endl 
+                  << "menu: Displays this menu" << std::endl;
 
 
 }
