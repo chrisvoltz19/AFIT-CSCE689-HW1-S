@@ -91,6 +91,7 @@ void TCPServer::listenSvr()
 	int shutdown = 0; // variable to track if the server had an error within one of the loops
 	char buffer[150]; // will be used to hold from receive
 	sockaddr_in client;
+	socklen_t clientSize = sizeof(client);
 	// while loop to handle everything 
 	while(shutdown == 0)
 	{
@@ -125,12 +126,12 @@ void TCPServer::listenSvr()
 				shutdown = 1;
 				break;
 			}
-			if(this->fds[i].fd = this->lSocket) // Case that we are at the listening (server) socket
+			if(this->fds[i].fd == this->lSocket) // Case that we are at the listening (server) socket
 			{
 				// accept all new incoming connections that are waiting
-				while(newConnection != -1) 
-				{
-					newConnection = accept(this->lSocket, (sockaddr*)&client, (socklen_t*)sizeof(client));
+				//while(newConnection != -1) 
+				//{
+					newConnection = accept(this->lSocket, (sockaddr*)&client, &clientSize);
 					if(newConnection < 0) // error on exception
 					{
 						if(errno != EWOULDBLOCK && errno != EAGAIN) // these two errors just mean no connections
@@ -145,7 +146,7 @@ void TCPServer::listenSvr()
 					this->fds[nfds].events = POLLIN; //TODO: if errors sending back check here
 					nfds++;
 					std::cout << "Received new connection" << std::endl;
-				}
+				//}
 			}
 			// Not the listening server socket so must be a different connection
 			else
