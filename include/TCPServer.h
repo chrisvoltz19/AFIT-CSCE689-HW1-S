@@ -29,7 +29,7 @@ public:
    void closeConnection(int connection);
    int parseData(char* buffer, int length, int fd);
    int decision(std::string input, int fd);
-   void options(std::string s);
+   std::string options(std::string s);
 
 private:
    int lSocket; // File Descriptor of the listening server socket

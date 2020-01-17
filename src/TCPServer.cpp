@@ -282,7 +282,7 @@ int TCPServer::decision(std::string input, int fd)
         }
         else if(input.compare("4") == 0)
         {
-                result.assign("Squirrels usually forget where they hide about half of their nuts \n");
+                result.assign("Squirrels usually forget where they hide about half of their nuts");
         }
         else if(input.compare("5") == 0)
         {
@@ -294,8 +294,8 @@ int TCPServer::decision(std::string input, int fd)
         }
         else if(input.compare("menu" ) == 0)
         {
-		result.assign("MENU: \n");
-                options(result);
+		//result.assign("MENU: \n");
+                result.assign(options("MENU: \n"));
 
         }
         else
@@ -327,7 +327,7 @@ int TCPServer::decision(std::string input, int fd)
  *  It is put in a method for cleaner programming practices so one change affects all instances 
  *
  ************************************************************************************************/
-void TCPServer::options(std::string s)
+std::string TCPServer::options(std::string s)
 {
         s.append("hello: Greeting \n"
 		 "1: Movie Recommendation \n" 
@@ -338,6 +338,8 @@ void TCPServer::options(std::string s)
                  "passwd: Change your password\n"
                  "exit: Disconnect from server\n" 
                  "menu: Displays this menu\n");
+
+	return s;
 
 
 }
