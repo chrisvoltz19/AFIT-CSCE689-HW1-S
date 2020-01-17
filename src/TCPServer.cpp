@@ -91,6 +91,7 @@ void TCPServer::listenSvr()
 	int shutdown = 0; // variable to track if the server had an error within one of the loops
 	char buffer[150]; // will be used to hold from receive
 	sockaddr_in client;
+	socklen_t clientSize = sizeof(client);
 	// while loop to handle everything 
 	while(shutdown == 0)
 	{
@@ -125,13 +126,12 @@ void TCPServer::listenSvr()
 				shutdown = 1;
 				break;
 			}
-			if(this->fds[i].fd = this->lSocket) // Case that we are at the listening (server) socket
+			if(this->fds[i].fd == this->lSocket) // Case that we are at the listening (server) socket
 			{
 				// accept all new incoming connections that are waiting
-				while(newConnection != -1) 
-				{
-					std::cout << &client;
-					newConnection = accept(this->lSocket, (sockaddr*)&client, (socklen_t*)sizeof(client));
+				//while(newConnection != -1) 
+				//{
+					newConnection = accept(this->lSocket, (sockaddr*)&client, &clientSize);
 					if(newConnection < 0) // error on exception
 					{
 						if(errno != EWOULDBLOCK && errno != EAGAIN) // these two errors just mean no connections
@@ -145,7 +145,8 @@ void TCPServer::listenSvr()
 					this->fds[nfds].fd = newConnection;
 					this->fds[nfds].events = POLLIN; //TODO: if errors sending back check here
 					nfds++;
-				}
+					std::cout << "Received new connection" << std::endl;
+				//}
 			}
 			// Not the listening server socket so must be a different connection
 			else
@@ -281,7 +282,7 @@ int TCPServer::decision(std::string input, int fd)
         }
         else if(input.compare("4") == 0)
         {
-                result.assign("Squirrels usually forget where they hide about half of their nuts \n");
+                result.assign("Squirrels usually forget where they hide about half of their nuts");
         }
         else if(input.compare("5") == 0)
         {
@@ -293,8 +294,8 @@ int TCPServer::decision(std::string input, int fd)
         }
         else if(input.compare("menu" ) == 0)
         {
-		result.assign("MENU: \n");
-                options(result);
+		//result.assign("MENU: \n");
+                result.assign(options("MENU: \n"));
 
         }
         else
@@ -326,7 +327,7 @@ int TCPServer::decision(std::string input, int fd)
  *  It is put in a method for cleaner programming practices so one change affects all instances 
  *
  ************************************************************************************************/
-void TCPServer::options(std::string s)
+std::string TCPServer::options(std::string s)
 {
         s.append("hello: Greeting \n"
 		 "1: Movie Recommendation \n" 
@@ -337,6 +338,8 @@ void TCPServer::options(std::string s)
                  "passwd: Change your password\n"
                  "exit: Disconnect from server\n" 
                  "menu: Displays this menu\n");
+
+	return s;
 
 
 }
